@@ -23,7 +23,7 @@ function addTask(event) {
     const addDone = document.getElementById('add-done-task').value
 
     //create the list for the task
-    let li = createElement('li', [], ['task'])
+    let li = createElement('li', [], ['task'], { tabindex: '0' })
 
     //chooses the case by the button that clicked
     switch (target.id) {
@@ -64,31 +64,6 @@ function addTask(event) {
   }
 }
 
-// divSections.addEventListener('dblclick', (e) => {
-//   e.preventDefault()
-//   const target = e.target
-//   if (target.className === 'task') {
-//     let newInput = createElement('input', [], ['change-task'])
-//     // let oldTaskValue = target.innerText
-//     newInput.value = target.textContent
-//     target.innerText = ''
-//     target.append(newInput)
-
-//     // target.addEventListener('blur', (e) => {
-//     //   saveNewTask()
-//     // }),
-//     //   true
-//   }
-// })
-
-// .addEventListener('keydown', (e) => {
-//     if (e.altKey && e.key === '1')
-
-//     if (e.altKey && e.key === '2')
-
-//         if (e.altKey && e.key === '3')
-//   })
-
 /**
  * Creates a new DOM element.
  *
@@ -120,18 +95,99 @@ function createElement(tagName, children = [], classes = [], attributes = {}) {
 
 function createTasks() {
   for (let task of tasksObj.todo) {
-    let li = createElement('li', [], ['task'])
+    let li = createElement('li', [], ['task'], { tabindex: '0' })
     li.innerHTML = task
     ulTodo.append(li)
   }
   for (let task of tasksObj['in-progress']) {
-    let li = createElement('li', [], ['task'])
+    let li = createElement('li', [], ['task'], { tabindex: '0' })
     li.innerHTML = task
     ulProgress.append(li)
   }
   for (let task of tasksObj.done) {
-    let li = createElement('li', [], ['task'])
+    let li = createElement('li', [], ['task'], { tabindex: '0' })
     li.innerHTML = task
     ulDone.append(li)
+  }
+}
+
+divSections.addEventListener('keydown', moveTask)
+function moveTask(event) {
+  if (
+    !(
+      (event.key === '1' && event.altKey) ||
+      (event.key === '2' && event.altKey) ||
+      (event.key === '3' && event.altKey)
+    )
+  )
+    return
+  let task = event.target
+  if (task.className !== 'task') return
+  const newTask = createElement('li', [task.innerText], ['task'], {
+    tabindex: '0',
+  })
+  switch (task.parentElement.id) {
+    case 'ulTodo':
+      tasksObj.todo = tasksObj.todo.filter((a) => a !== newTask.textContent)
+      break
+    case 'ulProgress':
+      tasksObj['in-progress'] = tasksObj['in-progress'].filter(
+        (a) => a !== newTask.textContent
+      )
+      break
+    case 'ulDone':
+      tasksObj.done = tasksObj.done.filter((a) => a !== newTask.textContent)
+      break
+  }
+
+  if (event.key === '1' && event.altKey) {
+    ulTodo.append(newTask)
+    task.remove()
+    tasksObj.todo.push(newTask.textContent)
+  }
+  if (event.key === '2' && event.altKey) {
+    ulProgress.append(newTask)
+    task.remove()
+    tasksObj['in-progress'].push(newTask.textContent)
+  }
+  if (event.key === '3' && event.altKey) {
+    ulDone.append(newTask)
+    task.remove()
+    tasksObj.done.push(newTask.textContent)
+  }
+  localStorage.setItem('tasks', JSON.stringify(tasksObj))
+}
+
+divSections.addEventListener('dblclick', changeTask)
+
+function changeTask(e) {
+  e.preventDefault()
+  const target = e.target
+  if (target.className === 'task') {
+    let newInput = document.createElement('input')
+    newInput.setAttribute('id', 'change-task-input')
+    const oldcontent = target.textContent
+    newInput.value = target.textContent
+    target.innerText = ''
+    let listTask = []
+    target.append(newInput)
+    newInput.focus()
+    newInput.addEventListener('blur', () => {
+      if (newInput.value === '') newInput.value = oldcontent //bug fixed - when we dblclick and then remove the content and then lose focus so the old content came up and the task wouldn't stay empty
+      target.innerHTML = newInput.value
+      switch (target.parentElement.id) {
+        case 'ulTodo':
+          listTask = tasksObj.todo
+          break
+        case 'ulProgress':
+          listTask = tasksObj['in-progress']
+          break
+        case 'ulDone':
+          listTask = tasksObj.done
+          break
+      }
+      listTask[listTask.findIndex((a) => a === oldcontent)] = newInput.value
+      localStorage.setItem('tasks', JSON.stringify(tasksObj))
+    })
   }
 }
