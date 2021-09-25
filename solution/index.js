@@ -34,7 +34,7 @@ function addTask(event) {
         else {
           todo.append(li)
           document.getElementById('add-to-do-task').value = ''
-          tasksObj.todo.push(addToDo)
+          tasksObj.todo.unshift(addToDo)
         } //add the text to the list
         break
 
@@ -45,7 +45,7 @@ function addTask(event) {
         else {
           section2.children[0].append(li)
           document.getElementById('add-in-progress-task').value = ''
-          tasksObj['in-progress'].push(addProgress)
+          tasksObj['in-progress'].unshift(addProgress)
         } //add the text to the list
         break
 
@@ -56,7 +56,7 @@ function addTask(event) {
         else {
           done.append(li)
           document.getElementById('add-done-task').value = ''
-          tasksObj.done.push(addDone)
+          tasksObj.done.unshift(addDone)
         } //add the text to the list
         break
     }
@@ -139,21 +139,21 @@ function moveTask(event) {
       tasksObj.done = tasksObj.done.filter((a) => a !== newTask.textContent)
       break
   }
-
+  const ulProg = document.getElementById('in-progress')
   if (event.key === '1' && event.altKey) {
-    todo.append(newTask)
+    todo.prepend(newTask)
     task.remove()
-    tasksObj.todo.push(newTask.textContent)
+    tasksObj.todo.unshift(newTask.textContent)
   }
   if (event.key === '2' && event.altKey) {
-    section2.children[0].append(newTask)
+    ulProg.prepend(newTask)
     task.remove()
-    tasksObj['in-progress'].push(newTask.textContent)
+    tasksObj['in-progress'].unshift(newTask.textContent)
   }
   if (event.key === '3' && event.altKey) {
-    done.append(newTask)
+    done.prepend(newTask)
     task.remove()
-    tasksObj.done.push(newTask.textContent)
+    tasksObj.done.unshift(newTask.textContent)
   }
   localStorage.setItem('tasks', JSON.stringify(tasksObj))
 }
@@ -175,6 +175,8 @@ function changeTask(e) {
   })
 }
 
+search.addEventListener('input', searchTask)
+
 function searchTask() {
   let tasks = document.getElementsByClassName('task')
   const length = tasks.length
@@ -184,7 +186,7 @@ function searchTask() {
   for (const taskType in tasksObj) {
     for (const task of tasksObj[taskType]) {
       if (task.includes(search.value)) {
-        const newTask = makeTaskElement(task)
+        let newTask = createElement('li', [task], ['task'], { tabindex: '0' })
         document.getElementById(taskType).append(newTask)
       }
     }
