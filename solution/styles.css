@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Acme&display=swap');
+
+body {
+  font-family: 'Acme', sans-serif;
+  line-height: 2.5rem;
+  font-size: 20px;
+  background: linear-gradient(to right, #83a4d4, #b6fbff);
+}
+
+h1 {
+  text-align: center;
+  text-shadow: 3px 2px rgb(11, 24, 22);
+  color: rgb(241, 255, 190);
+}
+#search-bar {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  border-radius: 5px;
+}
+
+#search {
+  width: 400px;
+}
+
+#sections {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  text-align: center;
+  border-radius: 5px;
+}
+.task {
+  width: 300px;
+  margin: 4px;
+  list-style: none;
+  border-radius: 10px;
+  border: 2px solid rgb(60, 11, 238);
+}
+input {
+  text-align: center;
+  width: 200px;
+  height: 1.5rem;
+  box-shadow: 0px 3px 4px 0px;
+  border-radius: 5px;
+}
+
+button {
+  border-radius: 5px;
+  width: 70px;
+  height: 1.5rem;
+}
+ul {
+  min-height: 25px;
+}

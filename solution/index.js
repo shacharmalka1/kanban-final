@@ -11,9 +11,11 @@ if (localStorage.getItem('tasks') === null) {
 let tasksObj = JSON.parse(localStorage.getItem('tasks'))
 createTasks()
 const divSections = document.getElementById('sections')
+
 divSections.addEventListener('click', addTask)
 
 function addTask(event) {
+  const ulProg = document.getElementById('in-progress')
   event.preventDefault()
   const target = event.target
   if (target.tagName === 'BUTTON') {
@@ -23,7 +25,7 @@ function addTask(event) {
     const addDone = document.getElementById('add-done-task').value
 
     //create the list for the task
-    let li = createElement('li', [], ['task'], { tabindex: '0' })
+    let li = makeTaskElement()
 
     //chooses the case by the button that clicked
     switch (target.id) {
@@ -43,7 +45,7 @@ function addTask(event) {
         if (addProgress === '') alert('add some content please')
         //if input empty an alert pop up
         else {
-          section2.children[0].append(li)
+          ulProg.append(li)
           document.getElementById('add-in-progress-task').value = ''
           tasksObj['in-progress'].unshift(addProgress)
         } //add the text to the list
@@ -94,20 +96,23 @@ function createElement(tagName, children = [], classes = [], attributes = {}) {
 }
 
 function createTasks() {
+  const ulProg = document.getElementById('in-progress')
   for (let task of tasksObj.todo) {
-    let li = createElement('li', [], ['task'], { tabindex: '0' })
-    li.innerHTML = task
+    let li = makeTaskElement(task)
     todo.append(li)
   }
   for (let task of tasksObj['in-progress']) {
-    let li = createElement('li', [], ['task'], { tabindex: '0' })
-    li.innerHTML = task
-    section2.children[0].append(li)
+    let li = makeTaskElement(task)
+    ulProg.append(li)
   }
   for (let task of tasksObj.done) {
-    let li = createElement('li', [], ['task'], { tabindex: '0' })
-    li.innerHTML = task
+    let li = makeTaskElement(task)
     done.append(li)
+  }
+  let uls = document.getElementsByTagName('UL')
+  for (const ul of uls) {
+    ul.addEventListener('dragover', allowDrop)
+    ul.addEventListener('drop', drop)
   }
 }
 
@@ -123,9 +128,7 @@ function moveTask(event) {
     return
   let task = event.target
   if (task.className !== 'task') return
-  const newTask = createElement('li', [task.innerText], ['task'], {
-    tabindex: '0',
-  })
+  const newTask = makeTaskElement(task.textContent)
   switch (task.parentElement.id) {
     case 'todo':
       tasksObj.todo = tasksObj.todo.filter((a) => a !== newTask.textContent)
@@ -191,4 +194,39 @@ function searchTask() {
       }
     }
   }
+}
+
+//bonusssssss
+
+function drop(e) {
+  const removeTask = document.getElementById('remove-task')
+  if (removeTask === null) return
+  const taskText = e.dataTransfer.getData('Text')
+  e.target.closest('ul').append(makeTaskElement(taskText))
+
+  tasksObj[e.target.closest('ul').id].unshift(taskText)
+  tasksObj[removeTask.parentNode.id] = tasksObj[
+    removeTask.parentNode.id
+  ].filter((a) => a !== taskText)
+  removeTask.remove()
+  localStorage.setItem('tasks', JSON.stringify(tasksObj))
+}
+
+function drag(e) {
+  e.target.setAttribute('id', 'remove-task')
+  e.dataTransfer.setData('Text', e.target.textContent)
+}
+
+function allowDrop(e) {
+  e.preventDefault()
+}
+
+function makeTaskElement(text) {
+  const task = document.createElement('li')
+  task.setAttribute('tabindex', '0')
+  task.setAttribute('class', 'task')
+  task.setAttribute('draggable', 'true')
+  task.addEventListener('dragstart', drag)
+  task.textContent = text
+  return task
 }
