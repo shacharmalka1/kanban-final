@@ -23,5 +23,3 @@ the features included in this website are:
 
 4. a global search bar that shows you only the tasks that includes the characters written inside the input.
    ![](image/search.png)
-
-5. a current clean looking design that makes the site readable for long term usage. using cool tones to give a feeling of relief. in addition, while hovering over the lists you get a shadow affect.
