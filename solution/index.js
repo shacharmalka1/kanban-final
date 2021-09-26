@@ -230,3 +230,45 @@ function makeTaskElement(text) {
   task.textContent = text
   return task
 }
+
+const urlApi = 'https://json-bins.herokuapp.com/bin/614af9534021ac0e6c080cbf'
+
+const loader = document.getElementById('loading')
+
+async function save() {
+  loader.style.visibility = 'visible'
+  const putProp = {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ tasks: tasksObj }),
+  }
+  await fetch(urlApi, putProp)
+  loader.style.visibility = 'hidden'
+}
+
+async function load() {
+  loader.style.visibility = 'visible'
+  const getProp = {
+    method: 'Get',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  }
+  let getAns = await fetch(urlApi, getProp)
+  const data = await getAns.json()
+  console.log(data.tasks)
+  localStorage.setItem('tasks', JSON.stringify(data.tasks))
+  tasksObj = data.tasks
+  let tasks = document.getElementsByClassName('task')
+  loader.style.visibility = 'hidden'
+  const length = tasks.length
+  for (let i = 0; i < length; i++) {
+    tasks[0].remove()
+  }
+  createTasks()
+}
