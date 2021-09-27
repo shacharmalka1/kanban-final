@@ -11,7 +11,7 @@ Welcome!
 In this screen shot you can see i added some tasks for example.
 the features included in this website are:
 
-# You can add new tasks by writing the task in the input and pressing the add button:
+### You can add new tasks by writing the task in the input and pressing the add button:
 
 ![](image/addbutton.png) ![](image/afteraddtask.png)
 
