@@ -8,18 +8,36 @@ Welcome to your pre-course final project. You are going to build a task-manageme
 
 Welcome!
 
-in this screen shot you can see i added some tasks for example.
+In this screen shot you can see i added some tasks for example.
 the features included in this website are:
 
-1. you can add new tasks by writing the task in the input and pressing the add button:
-   ![](image/addbutton.png) ![](image/afteraddtask.png)
+# You can add new tasks by writing the task in the input and pressing the add button:
 
-2. you can re-edit a task by double clicking the task you want to add.
-   ![](image/dblclick.png) ![](image/edittask.png)
+![](image/addbutton.png) ![](image/afteraddtask.png)
 
-3. you can move tasks from one list to another by clicking the wanted task and then pressing "alt+ number"
-   the number should be 1,2 or 3 depending on the list you want to be the destination.
-   ![](image/beforeAltNum.png) ![](image/afterAltNum.png)
+# When the user click on add button without type a text, an alert message will appear
 
-4. a global search bar that shows you only the tasks that includes the characters written inside the input.
-   ![](image/search.png)
+![](image/alert.png)
+
+# You can re-edit a task by double clicking the task you want to add.
+
+![](image/dblclick.png) ![](image/edittask.png)
+
+# You can move tasks from one list to another by clicking the wanted task and then pressing "alt+ number"
+
+the number should be 1,2 or 3 depending on the list you want to be the destination.
+![](image/beforeAltNum.png) ![](image/afterAltNum.png)
+
+# A global search bar that shows you only the tasks that includes the characters written inside the input.
+
+![](image/search.png)
+
+## Bonus
+
+# The user allowed to drag tasks and drop them in another lists.
+
+![](image/dragAndDrop.png) ![](image/afterDragAndDrop.png)
+
+# The user is able to save the data in this api https://json-bins.herokuapp.com/bin/614af9534021ac0e6c080cbf
+
+![](image/loader.png) ![](image/dataApi.png)
