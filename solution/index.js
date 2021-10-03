@@ -67,7 +67,7 @@ function addTask(event) {
 }
 
 /**
- * Creates a new DOM element.
+ * Creates a new DOM element
  *
  * Example usage:
  * createElement("div", ["just text", createElement(...)], ["nana", "banana"], {id: "bla"}, {click: (...) => {...}})
