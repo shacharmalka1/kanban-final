@@ -1,3 +1,13 @@
+function updateStorage(tasks) {
+  //Function that update the tasks in the local storage.
+  localStorage.setItem('tasks', JSON.stringify(tasks))
+}
+
+function getFromStorage() {
+  //Function that get the tasks from the local storage.
+  return JSON.parse(localStorage.getItem('tasks'))
+}
+
 if (localStorage.getItem('tasks') === null) {
   //check if there is  a "tasks" key in the local storage if not, create one
   let tasks = {
@@ -5,14 +15,25 @@ if (localStorage.getItem('tasks') === null) {
     'in-progress': [],
     done: [],
   }
-  localStorage.setItem('tasks', JSON.stringify(tasks))
+  updateStorage(tasks)
 }
 
-let tasksObj = JSON.parse(localStorage.getItem('tasks'))
+let tasksObj = getFromStorage()
 createTasks()
 const divSections = document.getElementById('sections')
 
 divSections.addEventListener('click', addTask)
+
+function addValueToList(ul, li, newValue, inputId) {
+  //The function add the new task to the correct list and updates the taskObj
+  li.textContent = newValue
+  if (newValue === '') alert('add some content please')
+  else {
+    ul.append(li)
+    document.getElementById(inputId).value = ''
+    tasksObj[ul.id].unshift(newValue)
+  }
+}
 
 function addTask(event) {
   const ulProg = document.getElementById('in-progress')
@@ -30,39 +51,18 @@ function addTask(event) {
     //chooses the case by the button that clicked
     switch (target.id) {
       case 'submit-add-to-do':
-        li.textContent = addToDo
-        if (addToDo === '') alert('add some content please')
-        //if input empty an alert pop up
-        else {
-          todo.append(li)
-          document.getElementById('add-to-do-task').value = ''
-          tasksObj.todo.unshift(addToDo)
-        } //add the text to the list
+        addValueToList(todo, li, addToDo, 'add-to-do-task')
         break
 
       case 'submit-add-in-progress':
-        li.textContent = addProgress
-        if (addProgress === '') alert('add some content please')
-        //if input empty an alert pop up
-        else {
-          ulProg.append(li)
-          document.getElementById('add-in-progress-task').value = ''
-          tasksObj['in-progress'].unshift(addProgress)
-        } //add the text to the list
+        addValueToList(ulProg, li, addProgress, 'add-in-progress-task')
         break
 
       case 'submit-add-done':
-        li.textContent = addDone
-        if (addDone === '') alert('add some content please')
-        //if input empty an alert pop up
-        else {
-          done.append(li)
-          document.getElementById('add-done-task').value = ''
-          tasksObj.done.unshift(addDone)
-        } //add the text to the list
+        addValueToList(done, li, addDone, 'add-done-task')
         break
     }
-    localStorage.setItem('tasks', JSON.stringify(tasksObj))
+    updateStorage(tasksObj)
   }
 }
 
@@ -116,20 +116,8 @@ function createTasks() {
   }
 }
 
-divSections.addEventListener('keydown', moveTask)
-function moveTask(event) {
-  if (
-    !(
-      (event.key === '1' && event.altKey) ||
-      (event.key === '2' && event.altKey) ||
-      (event.key === '3' && event.altKey)
-    )
-  )
-    return
-  let task = event.target
-  if (task.className !== 'task') return
-  const newTask = makeTaskElement(task.textContent)
-  switch (task.parentElement.id) {
+function removeContentFromOldTask(ulId, newTask) {
+  switch (ulId) {
     case 'todo':
       tasksObj.todo = tasksObj.todo.filter((a) => a !== newTask.textContent)
       break
@@ -142,39 +130,55 @@ function moveTask(event) {
       tasksObj.done = tasksObj.done.filter((a) => a !== newTask.textContent)
       break
   }
-  const ulProg = document.getElementById('in-progress')
+}
+
+function addTaskToListAndSaveIt(event, newTask) {
+  const ulPogress = document.getElementById('in-progress')
   if (event.key === '1' && event.altKey) {
     todo.prepend(newTask)
-    task.remove()
     tasksObj.todo.unshift(newTask.textContent)
+    event.target.remove()
   }
   if (event.key === '2' && event.altKey) {
-    ulProg.prepend(newTask)
-    task.remove()
+    ulPogress.prepend(newTask)
     tasksObj['in-progress'].unshift(newTask.textContent)
+    event.target.remove()
   }
   if (event.key === '3' && event.altKey) {
     done.prepend(newTask)
-    task.remove()
     tasksObj.done.unshift(newTask.textContent)
+    event.target.remove()
   }
-  localStorage.setItem('tasks', JSON.stringify(tasksObj))
+
+  //Updates the localStorage
+  updateStorage(tasksObj)
+}
+
+divSections.addEventListener('keydown', moveTask)
+function moveTask(event) {
+  if (!(event.altKey && [1, 2, 3].includes(Number(event.key)))) return
+  let task = event.target
+  if (task.className !== 'task') return
+  const newTask = makeTaskElement(task.textContent)
+  removeContentFromOldTask(event.target.parentElement.id, newTask)
+  const ulProg = document.getElementById('in-progress')
+  addTaskToListAndSaveIt(event, newTask)
+  updateStorage(tasksObj)
 }
 
 sections.addEventListener('dblclick', changeTask)
 
 function changeTask(e) {
   e.preventDefault()
-  const target = e.target
-  const saveKey = tasksObj[target.closest('ul').id]
-  const oldText = target.textContent
-  target.setAttribute('contentEditable', 'true')
-  target.addEventListener('blur', () => {
-    let newText = target.textContent
-    if (newText === '') target.textContent = oldText
-    newText = target.textContent
+  const saveKey = tasksObj[e.target.closest('ul').id]
+  const oldText = e.target.textContent
+  e.target.setAttribute('contentEditable', 'true')
+  e.target.addEventListener('blur', () => {
+    let newText = e.target.textContent
+    if (newText === '') e.target.textContent = oldText
+    newText = e.target.textContent
     saveKey[saveKey.findIndex((a) => a === oldText)] = newText
-    localStorage.setItem('tasks', JSON.stringify(tasksObj))
+    updateStorage(tasksObj)
   })
 }
 
@@ -209,7 +213,7 @@ function drop(e) {
     removeTask.parentNode.id
   ].filter((a) => a !== taskText)
   removeTask.remove()
-  localStorage.setItem('tasks', JSON.stringify(tasksObj))
+  updateStorage(tasksObj)
 }
 
 function drag(e) {
@@ -259,6 +263,7 @@ async function load() {
       'Content-Type': 'application/json',
     },
   }
+
   let getAns = await fetch(urlApi, getProp)
   const data = await getAns.json()
   console.log(data.tasks)
